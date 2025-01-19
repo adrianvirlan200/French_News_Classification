@@ -17,10 +17,13 @@ df = pd.read_csv('train.csv', index_col=False)
 test_data = pd.read_csv('test.csv', index_col=False)
 
 # Set a random seed for reproducibility
-# random_seed = random.randint(0, 100000)
-# print(random_seed)
+random_seed = random.randint(0, 100000)
+print(random_seed)
 
-random_seed = 6186
+# 49119
+
+# random_seed = 6186
+# random_seed = 42
 
 # Split the data into train and validation sets
 train_df, validation_df = train_test_split(
