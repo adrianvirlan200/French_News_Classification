@@ -17,9 +17,10 @@ df = pd.read_csv('train.csv', index_col=False)
 test_data = pd.read_csv('test.csv', index_col=False)
 
 # Set a random seed for reproducibility
-random_seed = random.randint(0, 100000)
+# random_seed = random.randint(0, 100000)
+# print(random_seed)
 
-print(random_seed)
+random_seed = 6186
 
 # Split the data into train and validation sets
 train_df, validation_df = train_test_split(
@@ -47,7 +48,7 @@ train_df_balanced = pd.concat(
     [fake_upsampled, biased_upsampled, true_upsampled], ignore_index=True)
 # Amestecă rândurile (shuffle)
 train_df_balanced = train_df_balanced.sample(
-    frac=1, random_state=42).reset_index(drop=True)
+    frac=1, random_state=random_seed).reset_index(drop=True)
 
 # Preprocessing function
 
@@ -125,7 +126,8 @@ train_inputs = train_data['Text'].apply(format_input).tolist()
 train_targets = train_data['Label'].tolist()
 validation_inputs = validation_data['Text'].apply(format_input).tolist()
 validation_targets = validation_data['Label'].tolist()
-test_inputs = test_data['Text'].apply(lambda x: f'classify: {x}').tolist()
+test_inputs = test_data['Text'].apply(
+    lambda x: f'classify this news article: {x}').tolist()
 
 # Tokenize inputs
 train_encodings = tokenizer(
