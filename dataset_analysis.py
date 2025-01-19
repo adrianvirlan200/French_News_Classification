@@ -1,10 +1,10 @@
 import pandas as pd
 
 
-def update_labels(csv_path, output_path=None):
+def copy_predicted_label_to_label(csv_path, output_path=None):
     """
     Reads a CSV file, copies the 'Predicted_Label' column into 'Label',
-    removes the 'Predicted_Label' column, and saves the updated DataFrame.
+    removes the 'Predicted_Label' column, and ensures the 'text' column is not modified.
 
     Args:
         csv_path (str): Path to the input CSV file.
@@ -22,15 +22,15 @@ def update_labels(csv_path, output_path=None):
         print("Original DataFrame:")
         print(df.head())
 
-        # Check if 'Predicted_Label' exists
-        if 'Predicted_Label' not in df.columns:
-            print("Error: 'Predicted_Label' column not found in the CSV file.")
-            return None
+        # Verify required columns exist
+        required_columns = ['Text', 'Label', 'Predicted_Label']
+        for col in required_columns:
+            if col not in df.columns:
+                print(f"Error: Required column '{col}' not found in the CSV file.")
+                return None
 
-        # Check if 'Label' exists
-        if 'Label' not in df.columns:
-            print("Error: 'Label' column not found in the CSV file.")
-            return None
+        # Make a copy of the 'text' column to ensure it remains unchanged
+        original_text = df['Text'].copy()
 
         # Copy 'Predicted_Label' into 'Label'
         df['Label'] = df['Predicted_Label']
@@ -38,13 +38,14 @@ def update_labels(csv_path, output_path=None):
         # Remove 'Predicted_Label' column
         df.drop(columns=['Predicted_Label'], inplace=True)
 
-        # Display the updated DataFrame (optional, for verification)
-        print("\nUpdated DataFrame:")
-        print(df.head())
+        # Verify that the 'text' column is unchanged
+        if df['Text'].equals(original_text):
+            print("\n' Text' column remains unchanged.")
+        else:
+            print("\nWarning: 'text' column has been modified.")
 
         # Define the output path
         if output_path is None:
-            # Create a new filename by inserting '_updated' before the file extension
             if csv_path.lower().endswith('.csv'):
                 output_path = csv_path[:-4] + '_updated.csv'
             else:
@@ -57,8 +58,7 @@ def update_labels(csv_path, output_path=None):
         return df
 
     except FileNotFoundError:
-        print(
-            f"Error: File not found at path '{csv_path}'. Please check the file path.")
+        print(f"Error: File not found at path '{csv_path}'. Please check the file path.")
         return None
     except pd.errors.EmptyDataError:
         print("Error: The CSV file is empty.")
@@ -116,12 +116,13 @@ def compare_first_columns(csv1_path, csv2_path):
 # Example usage
 csv_file1 = 'test.csv'
 csv_file2 = r'C:\Users\adi\Desktop\SII\tema_predictie\results\classification_result.csv'
+csv_file3 = r'C:\Users\adi\Desktop\SII\tema_predictie\results\classification_result_updated.csv'
 
-result = compare_first_columns(csv_file1, csv_file2)
+result = compare_first_columns(csv_file1, csv_file3)
 print("Comparare rezultată:", result)
 
 
-#updated_df = update_labels(csv_file2)
+# updated_df = copy_predicted_label_to_label(csv_file2)
 # if updated_df is not None:
 #     print("\nLabel update was successful.")
 # else:
